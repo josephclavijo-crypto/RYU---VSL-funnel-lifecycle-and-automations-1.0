@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Update — MQL / DQL · RYU GTM Automation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="brand">RYU · GTM Automation System</span>
+    <span class="crumb">
+      <a href="../index.html">VSL Funnel</a>
+      <span class="sep">/</span>
+      <span class="current">CRM Update — MQL / DQL</span>
+    </span>
+  </div>
+</div>
+
+<main class="wrap">
+  <p class="eyebrow">Stage 02 — Marketing Qualified Lead</p>
+  <h1>CRM Update — MQL / DQL<br>(Short Credit Form Only)</h1>
+
+  <div class="meta-row">
+    <div class="meta-item">
+      <span class="meta-label">Platform</span>
+      <code>GoHighLevel</code>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Trigger forms</span>
+      <code>6ibcP6gS8QhQoaGfGKl4, UYdJukRCJw0C34eyeLAO</code>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Decision field</span>
+      <code>ulgzndOvnlCxap57UeAD</code>
+    </div>
+  </div>
+
+  <section style="margin-top:36px">
+    <p class="eyebrow">Purpose</p>
+    <p class="purpose">This automation runs whenever a lead submits one of the two short credit forms. It reads the contact's self-reported credit tier and routes them down one of two paths: <strong>below 640</strong> gets tagged and lifecycle-staged as <strong>Marketing Disqualified Lead</strong>, clearing any prior MQL status. <strong>640 and above</strong> gets tagged and lifecycle-staged as <strong>Marketing Qualified Lead</strong>, with the submission date recorded. This is the single source of truth for whether a contact is allowed to continue toward booking a discovery call — the follow-up email sequence checks this exact MQL field before every send.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Simplified overview</p>
+    <div class="ascii-box">Trigger: Form submitted (either short credit form)
+   │
+   ▼
+IF credit score is "Low: below 640"
+   │
+   ├─ YES → Remove "MQL" tag → Add "MDQL" tag → Clear MQL field
+   │         → Set MQL = No, set DQ date, set lifecycle = Marketing Disqualified Lead
+   │         → End
+   │
+   └─ NO  → Remove "MDQL" tag → Add "MQL" tag
+             → Set lifecycle = Marketing Qualified Lead
+             → Set MQL = Yes, set MQL submit date, set MQL date
+             → End</div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Full branching tree</p>
+    <div class="tree" id="tree"></div>
+  </section>
+
+  <footer class="page-footer">
+    <p><a href="../index.html">← Back to VSL Funnel</a></p>
+  </footer>
+</main>
+
+<script src="../assets/tree-builder.js"></script>
+<script>
+(function () {
+  var T = window.WorkflowTree;
+
+  var triggerBlock = T.trigger(
+    'Trigger: Form submitted',
+    'Either of two short credit forms',
+    [
+      ['Form 1 ID', '6ibcP6gS8QhQoaGfGKl4'],
+      ['Form 2 ID', 'UYdJukRCJw0C34eyeLAO']
+    ]
+  );
+
+  var lowCreditBranch =
+    T.action('Remove tag', 'Action: remove_contact_tag', [['Tag', 'marketing - qualified lead']]) +
+    T.action('Add tag', 'Action: add_contact_tag', [['Tag', 'marketing - disqualified lead']]) +
+    T.action('Clear field data — MQL', 'Action: clear_field_data', [
+      ['Field', 'KCFkdLm1GdJaomfQD9pa'],
+      ['Title', 'Marketing Qualified Lead'],
+      ['New value', '(cleared)']
+    ]) +
+    T.action('Update contact field — MQL & DQ date', 'Action: update_field_data', [
+      ['KCFkdLm1GdJaomfQD9pa', 'Marketing Qualified Lead = No'],
+      ['RWLeCkGMtBPluONMUXI7', 'Marketing Disqualified Lead Date = current date'],
+      ['grzaUscZCdksUY6lyGsB', 'Contact Lifecycle Stage = Marketing Disqualified Lead']
+    ]) +
+    T.end('Marketing Disqualified Lead');
+
+  var goodCreditBranch =
+    T.action('Remove tag', 'Action: remove_contact_tag', [['Tag', 'marketing - disqualified lead']]) +
+    T.action('Add tag', 'Action: add_contact_tag', [['Tag', 'marketing - qualified lead']]) +
+    T.action('Update contact field', 'Action: update_field_data', [
+      ['grzaUscZCdksUY6lyGsB', 'Contact Lifecycle Stage = Marketing Qualified Lead']
+    ]) +
+    T.action('Update contact field — VSL MQL submit date', 'Action: update_field_data', [
+      ['fs5HwVjtKsQ2qm1gE6uT', 'VSL MQL Submit Date = current date'],
+      ['KCFkdLm1GdJaomfQD9pa', 'Marketing Qualified Lead = Yes'],
+      ['PDKuZmms7B0oCHimDIs1', 'Marketing Qualified Lead Date = current date']
+    ]) +
+    T.end('Marketing Qualified Lead');
+
+  var creditGate = T.gate(
+    'Low credit?',
+    'Condition / if-else',
+    [
+      ['Field', 'ulgzndOvnlCxap57UeAD'],
+      ['Operator', '=='],
+      ['Value', 'Low: below 640']
+    ],
+    lowCreditBranch,
+    goodCreditBranch
+  );
+
+  T.render('tree', triggerBlock + creditGate);
+})();
+</script>
+
+</body>
+</html>
