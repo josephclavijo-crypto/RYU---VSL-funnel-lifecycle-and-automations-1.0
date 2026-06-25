@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RYU GTM Automation System — VSL Funnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="brand">RYU · GTM Automation System</span>
+    <span class="crumb"><span class="current">VSL Funnel</span></span>
+  </div>
+</div>
+
+<main class="wrap">
+  <p class="eyebrow">24/7 evergreen call-booking funnel</p>
+  <h1>VSL Funnel — Lifecycle &amp; Automations</h1>
+  <p class="lede">Every stage a contact moves through, from opt-in to client, with the GoHighLevel automation behind each transition. Click any automation to see its purpose, a simplified overview, and the full branching logic.</p>
+
+  <section>
+    <div class="section-head">
+      <p class="eyebrow">Page journey</p>
+      <h2>What the user actually sees</h2>
+    </div>
+    <div class="page-funnel">
+      <div class="page-funnel-track">
+
+        <div class="page-step">
+          <p class="page-step-num">Step 1</p>
+          <div class="page-step-shot"><img src="assets/images/step1-optin.png" alt="Opt-in page offering a free video on paying off your home in 5-7 years, with a form requesting first name, last name, email, and phone"></div>
+          <p class="page-step-label">Ad → Opt-in page</p>
+          <p class="page-step-desc">User clicks the ad and submits the opt-in form (name, email, phone) — becomes a Lead.</p>
+        </div>
+
+        <div class="page-connector">→</div>
+
+        <div class="page-step">
+          <p class="page-step-num">Step 2</p>
+          <div class="page-step-shot"><img src="assets/images/step2-watch.png" alt="Watch page showing the VSL video with a call to action to see how fast the user could be mortgage-free"></div>
+          <p class="page-step-label">Watch page</p>
+          <p class="page-step-desc">User watches the VSL video. The qualification form sits below it.</p>
+        </div>
+
+        <div class="page-connector">→</div>
+
+        <div class="page-step">
+          <p class="page-step-num">Step 3</p>
+          <div class="page-step-shot"><img src="assets/images/step3-qualform.png" alt="Qualification form asking the user's credit score, with options ranging from low below 640 to great 760 or above"></div>
+          <p class="page-step-label">Qualification form</p>
+          <p class="page-step-desc">Credit score question. This is the trigger for the MQL/DQL automation.</p>
+          <a class="page-step-link" href="workflows/crm-update-mql-dql.html">→ View automation</a>
+        </div>
+
+        <div class="page-connector">→</div>
+
+        <div class="page-step">
+          <p class="page-step-num">Step 4</p>
+          <div class="page-step-shot" style="background:var(--panel);display:flex;align-items:center;justify-content:center">
+            <span style="font-size:11.5px;color:var(--ink-faint);padding:0 12px;text-align:center">Call booking page<br>(meeting with SDR)</span>
+          </div>
+          <p class="page-step-label">Booking page</p>
+          <p class="page-step-desc">Only qualified users are redirected here to book a discovery call.</p>
+        </div>
+
+        <div class="page-connector">→</div>
+
+        <div class="page-step">
+          <p class="page-step-num">Step 5</p>
+          <div class="page-step-shot"><img src="assets/images/step5-confirmation.png" alt="Booking confirmation page with the message you're booked, telling the user the call could save them five to six figures in interest"></div>
+          <p class="page-step-label">Booking confirmation</p>
+          <p class="page-step-desc">Confirms the discovery call. Lifecycle stage moves to Opportunity.</p>
+          <a class="page-step-link" href="#stage-opportunity">→ View stage</a>
+        </div>
+
+      </div>
+    </div>
+    <p class="funnel-source-note">Page screenshots reflect the live VSL funnel as of the last review. Steps 3 and 5 connect directly to mapped CRM automations below.</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <p class="eyebrow">CRM lifecycle</p>
+      <h2>Stage by stage</h2>
+    </div>
+    <div class="stage-list">
+
+      <!-- 1. Lead -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num">01</span>
+          <div class="stage-main">
+            <p class="stage-title">Lead</p>
+            <p class="stage-desc">Opts into the VSL form. First &amp; last touch attribution written; lifecycle stage set to Lead.</p>
+          </div>
+          <span class="stage-badge badge-confirmed">Confirmed</span>
+        </div>
+        <div class="automation-list">
+          <p class="empty">No automation mapped yet for this stage.</p>
+        </div>
+      </article>
+
+      <!-- 2. MQL -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num">02</span>
+          <div class="stage-main">
+            <p class="stage-title">Marketing Qualified Lead</p>
+            <p class="stage-desc">Submits the discovery financial form with qualifying answers.</p>
+          </div>
+          <span class="stage-badge badge-confirmed">Confirmed</span>
+        </div>
+        <div class="automation-list">
+          <a class="automation-link" href="workflows/crm-update-mql-dql.html">
+            <span class="arrow">→</span>
+            CRM Update — MQL / DQL (Short Credit Form Only)
+            <span class="platform-tag">GHL</span>
+          </a>
+          <a class="automation-link" href="workflows/lead-capture-followup-primary.html">
+            <span class="arrow">→</span>
+            Lead Capture Follow-Up Email — Primary
+            <span class="platform-tag">GHL</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- 3. MDQL branch -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num">03</span>
+          <div class="stage-main">
+            <p class="stage-title">Marketing Disqualified Lead</p>
+            <p class="stage-desc">Branch off MQL — same form, non-qualifying answers (e.g. low credit). Exits the sales-qualification track.</p>
+          </div>
+          <span class="stage-badge badge-confirmed">Confirmed</span>
+        </div>
+        <div class="automation-list">
+          <a class="automation-link" href="workflows/crm-update-mql-dql.html">
+            <span class="arrow">→</span>
+            CRM Update — MQL / DQL (Short Credit Form Only)
+            <span class="platform-tag">GHL</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- 4. Opportunity -->
+      <article class="stage" id="stage-opportunity">
+        <div class="stage-top">
+          <span class="stage-num">04</span>
+          <div class="stage-main">
+            <p class="stage-title">Opportunity</p>
+            <p class="stage-desc">Books a discovery call. MQL-gated — only qualified leads can book.</p>
+          </div>
+          <span class="stage-badge badge-confirmed">Confirmed</span>
+        </div>
+        <div class="automation-list">
+          <a class="automation-link" href="workflows/discovery-scheduled.html">
+            <span class="arrow">→</span>
+            Discovery — Scheduled
+            <span class="platform-tag">GHL</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- x. SQO trigger open question -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num flagged">!</span>
+          <div class="stage-main">
+            <p class="stage-title">How does Opportunity become SQO?</p>
+            <p class="stage-desc">Open question — likely a manual call disposition by the discovery specialist, not yet confirmed as an automation.</p>
+          </div>
+          <span class="stage-badge badge-flag">Open question</span>
+        </div>
+        <div class="automation-list">
+          <p class="empty">No automation mapped yet — pending confirmation.</p>
+        </div>
+      </article>
+
+      <!-- 5. SQO -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num">05</span>
+          <div class="stage-main">
+            <p class="stage-title">Sales Qualified Opportunity</p>
+            <p class="stage-desc">Discovery specialist confirms real fit: income, interest, credit, likely benefit.</p>
+          </div>
+          <span class="stage-badge badge-confirmed">Confirmed</span>
+        </div>
+        <div class="automation-list">
+          <p class="empty">No automation mapped yet for this stage.</p>
+        </div>
+      </article>
+
+      <!-- x. Discovery no-show -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num flagged">!</span>
+          <div class="stage-main">
+            <p class="stage-title">Discovery no-show / not qualified</p>
+            <p class="stage-desc">Open question — no pipeline stage or tag currently documented for this outcome.</p>
+          </div>
+          <span class="stage-badge badge-flag">Open question</span>
+        </div>
+        <div class="automation-list">
+          <p class="empty">No automation mapped yet — pending confirmation.</p>
+        </div>
+      </article>
+
+      <!-- 6. Enrollment scheduled -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num">06</span>
+          <div class="stage-main">
+            <p class="stage-title">Enrollment Scheduled</p>
+            <p class="stage-desc">SQO-gated — booked on an enrollment specialist's calendar.</p>
+          </div>
+          <span class="stage-badge badge-confirmed">Confirmed</span>
+        </div>
+        <div class="automation-list">
+          <p class="empty">No automation mapped yet for this stage.</p>
+        </div>
+      </article>
+
+      <!-- x. Enrollment no-show -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num flagged">!</span>
+          <div class="stage-main">
+            <p class="stage-title">Enrollment no-show / lost</p>
+            <p class="stage-desc">Open question — no pipeline stage or tag currently documented for this outcome.</p>
+          </div>
+          <span class="stage-badge badge-flag">Open question</span>
+        </div>
+        <div class="automation-list">
+          <p class="empty">No automation mapped yet — pending confirmation.</p>
+        </div>
+      </article>
+
+      <!-- 7. Client -->
+      <article class="stage">
+        <div class="stage-top">
+          <span class="stage-num">07</span>
+          <div class="stage-main">
+            <p class="stage-title">Client</p>
+            <p class="stage-desc">Closes on the enrollment call. Lifecycle stage set to Client; closed-won date recorded.</p>
+          </div>
+          <span class="stage-badge badge-confirmed">Confirmed</span>
+        </div>
+        <div class="automation-list">
+          <p class="empty">No automation mapped yet for this stage.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <p>RYU GTM Automation System — internal documentation, built iteratively as GHL workflows are mapped.</p>
+  </footer>
+</main>
+
+</body>
+</html>
