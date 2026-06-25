@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discovery — Scheduled · RYU GTM Automation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="brand">RYU · GTM Automation System</span>
+    <span class="crumb">
+      <a href="../index.html">VSL Funnel</a>
+      <span class="sep">/</span>
+      <span class="current">Discovery — Scheduled</span>
+    </span>
+  </div>
+</div>
+
+<main class="wrap">
+  <p class="eyebrow">Stage 04 — Opportunity</p>
+  <h1>Discovery — Scheduled</h1>
+
+  <div class="meta-row">
+    <div class="meta-item">
+      <span class="meta-label">Platform</span>
+      <code>GoHighLevel</code>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Trigger sources</span>
+      <code>5 calendars (incl. Retell.AI)</code>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Opportunity value</span>
+      <code>$565</code>
+    </div>
+  </div>
+
+  <section style="margin-top:36px">
+    <p class="eyebrow">Purpose</p>
+    <p class="purpose">This automation runs the moment a discovery call is booked, across five different calendar sources (including the Retell.AI voice booking flow). It first checks whether the contact is already a client or an existing SQL — if not, it creates or refreshes a $565 opportunity in the discovery pipeline, clears out any stale discovery/enrollment status tags, sets lifecycle to Opportunity, tags the contact as discovery-scheduled, and records which advisor the meeting was booked with. If the contact is already a client, it skips all of that and instead sends an internal notification so the team can reassign the conversation to the right customer success specialist instead of treating it as a new sales opportunity.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Simplified overview</p>
+    <div class="ascii-box">Trigger: Appointment booked (5 calendar sources)
+   │
+   ▼
+IF lifecycle != Client AND tags do not contain client tags
+   │
+   ├─ YES → Create $565 opportunity → Wait 1 min → Remove 19 stale tags
+   │         → Lifecycle = Opportunity → Add tag "discovery - scheduled"
+   │         → Update advisor assigned + appointment status
+   │         → Find opportunity (latest)
+   │              ├─ FOUND     → Update opportunity + owner + advisor field
+   │              └─ NOT FOUND → No action
+   │
+   └─ NO  → IF lifecycle == Client
+             ├─ YES → Internal notification: reassign to CSS
+             └─ NO  → No action defined</div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Full branching tree</p>
+    <div class="tree" id="tree"></div>
+  </section>
+
+  <footer class="page-footer">
+    <p><a href="../index.html">← Back to VSL Funnel</a></p>
+  </footer>
+</main>
+
+<script src="../assets/tree-builder.js"></script>
+<script>
+(function () {
+  var T = window.WorkflowTree;
+
+  var opportunityFoundBranch =
+    T.action('Update opportunity', 'Action: update_opportunity', [
+      ['Pipeline', '37hIFXDzq9lJrd8fPRaz'],
+      ['Stage', 'be268c50-9c96-418d-a773-69afa060cb20'],
+      ['Value', '$565']
+    ]) +
+    T.action('Add owner to opportunity', 'Action: add_opportunity_owner', [
+      ['User', 'contactOwner'],
+      ['Only unassigned', 'false']
+    ]) +
+    T.action('Update opportunity — advisor field', 'Action: update_opportunity', [
+      ['ymRHxNpN5q1MWfUVyZVO', '= appointment.user.name']
+    ]) +
+    T.end('Opportunity updated with advisor');
+
+  var opportunityNotFoundBranch = T.end('No matching opportunity — no action');
+
+  var findOpportunityGate = T.gate(
+    'Find opportunity',
+    'Action: find_opportunity (sorting: latest)',
+    [['Sorting', 'latest']],
+    opportunityFoundBranch,
+    opportunityNotFoundBranch
+  );
+
+  var notAClientYesBranch =
+    T.action('Create opportunity', 'Action: create_opportunity', [
+      ['Pipeline', '37hIFXDzq9lJrd8fPRaz'],
+      ['Stage', 'be268c50-9c96-418d-a773-69afa060cb20'],
+      ['Value', '$565'],
+      ['Name', '{{contact.first_name}} {{contact.last_name}}']
+    ]) +
+    T.wait('Wait 1 minute') +
+    T.action('Remove tags', 'Action: remove_tags', [
+      ['Tags removed', '19 prior discovery/enrollment status tags']
+    ]) +
+    T.action('Update lifecycle stage', 'Action: update_contact_field', [
+      ['grzaUscZCdksUY6lyGsB', 'Contact Lifecycle Stage = Opportunity']
+    ]) +
+    T.action('Add tag', 'Action: add_tags', [['Tag', 'discovery - scheduled']]) +
+    T.action('Update field — advisor assigned', 'Action: update_contact_field', [
+      ['c7k6drkA4LLcHcJKQdin', 'Decision Meeting Set By = appointment.user.name']
+    ]) +
+    T.action('Update field — appointment status', 'Action: update_contact_field', [
+      ['MhbaENJHcZanQXklFFsl', 'Discovery Meeting Appointment Status = Confirmed']
+    ]) +
+    findOpportunityGate;
+
+  var isClientYesBranch =
+    T.action('Internal notification', 'Action: internal_notification', [
+      ['Title', '{{contact.name}} is a client.'],
+      ['Routed to', 'conversation (assign)']
+    ]) +
+    T.end('Notified — mark discovery meeting invalid, reassign to CSS');
+
+  var isClientNoBranch = T.end('No action — none defined');
+
+  var isClientGate = T.gate(
+    'Is client?',
+    'Condition / if-else — lifecycle == Client',
+    [['Field', 'grzaUscZCdksUY6lyGsB (lifecycle stage)']],
+    isClientYesBranch,
+    isClientNoBranch
+  );
+
+  var rootGate = T.gate(
+    'Not a client or SQL already?',
+    'Root condition / if-else',
+    [
+      ['Lifecycle stage', '!= Client'],
+      ['Tags', 'does not contain rym client / rym live client variants']
+    ],
+    notAClientYesBranch,
+    isClientGate
+  );
+
+  var triggerBlock = T.trigger(
+    'Trigger: Appointment booked',
+    '5 calendar / appointment sources',
+    [
+      ['Calendar group', 'pKBmnsvzmbNZLhcpIzV1'],
+      ['Calendar group', 'd3io9CWm1tddEYILL24M'],
+      ['Calendar', 'hROqpNgFcwEEPxtex3IF'],
+      ['Retell.AI calendar', '39iW4vyQmDzkV1CRIskC (status = confirmed)'],
+      ['Calendar', 'Aijuhd996xPwwTRZ8gJn']
+    ]
+  );
+
+  T.render('tree', triggerBlock + rootGate);
+})();
+</script>
+
+</body>
+</html>
